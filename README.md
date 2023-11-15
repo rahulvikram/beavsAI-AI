@@ -38,12 +38,20 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-5. Start the development server (with hot reloading)
+5. Create a `.env` file in `/server` and add the following:
+```dotenv
+OPENAI_API_KEY="INSERT"
+PINECONE_API_KEY="INSERT"
+PINECONE_API_ENV="INSERT"
+PORT="8000"
+```
+
+6. Start the development server (with hot reloading)
 ```sh
 uvicorn main:app --reload
 ```
 
-6. Open the development server in your browser
+7. Open the development server in your browser
 ```sh
 http://localhost:8000
 ```
