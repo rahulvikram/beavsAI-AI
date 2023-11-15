@@ -8,7 +8,10 @@ This is the AI Hub for the Beavs.ai project. This is where we'll store our data,
 
 ### Prerequisites
 
-- [Python 3.8](https://www.python.org/downloads/release/python-380/)
+- [Python 3.9](https://www.python.org/downloads/release/python-390/)
+- [Pip](https://pip.pypa.io/en/stable/getting-started/)
+- [Uvicorn](https://www.uvicorn.org/)
+- [FastAPI](https://fastapi.tiangolo.com/)
 
 ### Installation
 
@@ -20,12 +23,14 @@ git clone https://github.com/OSU-App-Club/beavsAI-AI.git
 
 2. Create a virtual enviornment for the project
 ```sh
-python -m venv /path/to/new/virtual/environment
+cd beavsAI-AI
+cd server
+python -m venv venv
 ```
 
 3. Activate the virtual enviornment
 ```sh
-source /path/to/new/virtual/environment/bin/activate
+source venv/bin/activate
 ```
 
 4. Install the required packages
@@ -33,15 +38,25 @@ source /path/to/new/virtual/environment/bin/activate
 pip install -r requirements.txt
 ```
 
+5. Start the development server (with hot reloading)
+```sh
+uvicorn main:app --reload
+```
+
+6. Open the development server in your browser
+```sh
+http://localhost:8000
+```
+
 ## Usage
 
 ### Data
 
-- The `/data` directory is where we'll store our data. This will be used for training and testing our models.
+- The `/data` directory is where we'll store our data. This will be used for indexing and loading our data.
 
 ### Server
 
-- The `/server` directory is where we'll store our server code. This will be used for hosting our models and serving requests.
+- The `/server` directory is where we'll store our server code. This will be used for serving our API and other server-related things.
 
 ## License
 
