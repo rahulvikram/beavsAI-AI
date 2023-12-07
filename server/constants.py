@@ -1,3 +1,10 @@
+# © 2023 App Development Club @ Oregon State Unviersity
+# All Rights Reserved
+
+# Miscellaneous constants used throughout the project
+#  - course_map used to map the course number to the course name
+#  - data_map used to map the data to the course number
+
 course_map = {
     "101": "Computers: Apps & Implications",
     "161": "Introduction to Computer Science I",

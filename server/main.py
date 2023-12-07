@@ -1,3 +1,16 @@
+# © 2023 App Development Club @ Oregon State Unviersity
+# All Rights Reserved
+
+# This file exposes a REST API that can be used to interact with the Pinecone vector store. 
+# It is intended to be used as a reference for how to use Pinecone in a production environment. 
+# It is not intended to be used as a production server. 
+# For example, it does not have any authentication or rate limiting.
+
+# All of the functionality in this file can be used for free with the starter indexes/environment.
+
+# However, if you're wanting to extend this and add expanded functionality, you
+# will need to upgrade to a paid plan and put that in your .env file. 
+
 import json
 import logging
 import os
@@ -6,7 +19,6 @@ from typing import Union
 
 import pinecone
 import uvicorn
-from constants import course_map, data_map
 from dotenv import load_dotenv
 from fastapi import FastAPI, File, UploadFile
 from langchain.chains.question_answering import load_qa_chain
@@ -17,6 +29,8 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.vectorstores import Pinecone
 from pydantic import BaseModel, Field
 from starlette.middleware.cors import CORSMiddleware
+
+from constants import course_map, data_map
 
 origins = [
     "http://localhost:8080",
@@ -141,6 +155,7 @@ async def upload_pdf(pdf_path, index_name, embeddings):
             return {"error": "Index already has documents"}
     else:
         return {"error": "Index does not exist"}
+
 
 # Load .env
 load_dotenv()
