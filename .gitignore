@@ -1,3 +1,7 @@
+# root (test files, etc.)
+rename.py
+
+# server
 server/venv
 server/.env
 server/__pycache__
