@@ -16,7 +16,7 @@ PINECONE_API_KEY = os.environ["PINECONE_API_KEY"]
 PINECONE_API_ENV = os.environ["PINECONE_API_ENV"]
 
 print(f"\n Loading PDF... \n")
-loader = UnstructuredPDFLoader("../data/syllabus/CS161_F23.pdf")
+loader = UnstructuredPDFLoader("../data/syllabus/CS162_F23.pdf")
 
 # Load the PDF
 data = loader.load()
@@ -41,7 +41,7 @@ pinecone.init(
     environment=PINECONE_API_ENV,  # find next to the API key
 )
 
-index_name = "cs161"
+index_name = "cs162-index"
 
 if index_name not in pinecone.list_indexes():
     pinecone.create_index(name=index_name, metric="cosine", dimension=1536)
@@ -49,7 +49,7 @@ if index_name not in pinecone.list_indexes():
 docsearch = Pinecone.from_documents(texts, embeddings, index_name=index_name)
 
 # Get the most similar documents
-query = "Who are the instructors for this course?"
+query = "What are the pre-requisites for this course?"
 docs = docsearch.similarity_search(query)
 
 # Get a natural language answer to the question
@@ -57,4 +57,4 @@ llm = OpenAI(temperature=0, openai_api_key=OPENAI_API_KEY)
 chain = load_qa_chain(llm, chain_type="stuff")
 
 llm_response = chain.run(input_documents=docs, question=query)
-print(x)
+print(llm_response)
