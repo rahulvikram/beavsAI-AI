@@ -1,3 +1,4 @@
+# DONT SPAM run this code a lot because it uses tom's openAI key and it will make him broke
 import os
 
 import pinecone
@@ -11,25 +12,37 @@ from langchain.vectorstores import Pinecone
 
 load_dotenv()
 
+# constants
 OPENAI_API_KEY = os.environ["OPENAI_API_KEY"]
 PINECONE_API_KEY = os.environ["PINECONE_API_KEY"]
 PINECONE_API_ENV = os.environ["PINECONE_API_ENV"]
 
-print(f"\n Loading PDF... \n")
-loader = UnstructuredPDFLoader("../data/syllabus/CS161_F23.pdf")
+METRIC='cosine'
+DIMENSIONS=1536
 
-# Load the PDF
+# accept userinput for filename (based on the class they want to see)
+course_code = input("Enter CS course code (Number only, e.g. '271' rather than 'CS271'): ")
+filename = f"CS{course_code}" # turns e.g. 161 into CS161
+
+# placeholder message while PDF is loading
+print(f"\n Loading PDF... \n")
+
+# load PDF via user input provided for filename
+loader = UnstructuredPDFLoader(f"../data/{filename}.pdf")
 data = loader.load()
 
+# if successful, print success messages
 print(f"\n Loaded {len(data)} documents \n")
 print(f"\n There are {len(data[0].page_content)} characters in the document \n")
 
+# print filler text while splitting data
 print(f"\n Splitting...\n")
 
-# Chunk the data into smaller pieces
+# Split the data into smaller pieces
 text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
 texts = text_splitter.split_documents(data)
 
+# if successful, print success message
 print(f"\n Successsfully Split. You now have {len(texts)} documents \n")
 
 # Create embeddings of the documents to get ready for semantic search
@@ -41,20 +54,49 @@ pinecone.init(
     environment=PINECONE_API_ENV,  # find next to the API key
 )
 
-index_name = "cs161"
+# dynamically set index name based on user input
+index_name = f"cs{course_code}"
 
-if index_name not in pinecone.list_indexes():
-    pinecone.create_index(name=index_name, metric="cosine", dimension=1536)
+# check if an index already exists, if it does, delete and replace with a new index to avoid the premium plan charges
+# unfortunately this is the only way to do this
 
+if len(pinecone.list_indexes()) == 1: # IF an index already does exist
+    # if the index we want to add matches the index already existing
+    if index_name == pinecone.list_indexes()[0]:
+        pass; # do nothing, move onto PDF loading
+    else: # if the index existing does not match the one we want,
+        pinecone.delete_index(pinecone.list_indexes()[0]) # deletes existing index
+        pinecone.create_index(name=index_name, metric=METRIC, dimension=DIMENSIONS) # creates new index based on what we want
+else: # IF an index does NOT yet exist
+    pinecone.create_index(name=index_name, metric=METRIC, dimension=DIMENSIONS) # creates new index based on what we want
+
+# load the PDF into the index we created
 docsearch = Pinecone.from_documents(texts, embeddings, index_name=index_name)
 
-# Get the most similar documents
-query = "Who are the instructors for this course?"
-docs = docsearch.similarity_search(query)
+# initializes query variable
+query = ''
+while query != 'exit':
+    # takes user input for the query
+    query = input("enter your query (type 'exit' to quit): ")
 
-# Get a natural language answer to the question
-llm = OpenAI(temperature=0, openai_api_key=OPENAI_API_KEY)
-chain = load_qa_chain(llm, chain_type="stuff")
+    # checks to make sure the query isn't exit or blank
+    # if it is blank, redo the query process; if it is exit, quit
+    if query.replace(" ", "") != '' and query != 'exit':
 
-llm_response = chain.run(input_documents=docs, question=query)
-print(x)
+        # conduct a similarity search on the index based on user query
+        docs = docsearch.similarity_search(query)
+
+        # --------- Get a natural language answer to the question --------- #
+        # initialize the OpenAI GPT-3 model
+        llm = OpenAI(temperature=0, openai_api_key=OPENAI_API_KEY)
+
+        # creates chain 
+        chain = load_qa_chain(llm, chain_type="stuff")
+
+        # retrieves a response based on user query using chain
+        llm_response = chain.run(input_documents=docs, question=query)
+
+        # prints the response to the terminal
+        print(llm_response) # print the response returned
+
+        # ----------------------------------------------------------------- #
