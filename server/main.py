@@ -12,10 +12,10 @@ def read_root():
 
 @app.post("/upload")
 async def create_upload_file(file: UploadFile = File(...)):
-    with open(f"../data/syllabus/{file.filename}", "wb") as local_file:
+    with open(f"../data/{file.filename}", "wb") as local_file:
         local_file.write(file.file.read())
     return {
         "filename": file.filename,
         "content_type": file.content_type,
-        "location": f"../data/syllabus/{file.filename}",
+        "location": f"../data/{file.filename}",
     }
