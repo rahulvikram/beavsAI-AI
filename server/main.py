@@ -39,6 +39,7 @@ origins = [
     "http://127.0.0.1:5173",
 ]
 
+# Create the FastAPI app
 app = FastAPI()
 
 # CORS
@@ -49,8 +50,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-# Our Server
-
 
 class LoadDocuemnts(BaseModel):
     class_name: str
@@ -237,6 +236,6 @@ async def list_index_info(index_name: str):
 def available_data():
     return data_map
 
-
+# Uvicorn isn't required, but it's a nice way to run a webserver in python
 if __name__ == "__main__":
     uvicorn.run("main:app", host="localhost", port=8080, log_level="info", reload=True)
